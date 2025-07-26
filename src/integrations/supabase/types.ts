@@ -14,6 +14,112 @@ export type Database = {
   }
   public: {
     Tables: {
+      debtors: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          guarantor_name: string | null
+          guarantor_phone: string | null
+          id: string
+          name: string
+          phone_number: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          guarantor_name?: string | null
+          guarantor_phone?: string | null
+          id?: string
+          name: string
+          phone_number: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          guarantor_name?: string | null
+          guarantor_phone?: string | null
+          id?: string
+          name?: string
+          phone_number?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      debts: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string
+          date_recorded: string
+          debtor_id: string
+          id: string
+          reason: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by: string
+          date_recorded?: string
+          debtor_id: string
+          id?: string
+          reason: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string
+          date_recorded?: string
+          debtor_id?: string
+          id?: string
+          reason?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "debts_debtor_id_fkey"
+            columns: ["debtor_id"]
+            isOneToOne: false
+            referencedRelation: "debtors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string
+          date_paid: string
+          debtor_id: string
+          id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by: string
+          date_paid?: string
+          debtor_id: string
+          id?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string
+          date_paid?: string
+          debtor_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_debtor_id_fkey"
+            columns: ["debtor_id"]
+            isOneToOne: false
+            referencedRelation: "debtors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           category: string
@@ -47,6 +153,33 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string | null
+          id: string
+          phone_number: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string | null
+          id: string
+          phone_number?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone_number?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       site_content: {
         Row: {
           content: string
@@ -77,15 +210,43 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_role: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
+      has_role: {
+        Args: {
+          _user_id: string
+          _role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "staff" | "viewer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -212,6 +373,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "staff", "viewer"],
+    },
   },
 } as const
